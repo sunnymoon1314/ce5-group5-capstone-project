@@ -1,0 +1,109 @@
+name: Run Python script to prepare the dataset for training
+# - How to Run Python Scripts in GitHub Action Workflows, Data Engineering With Nick, 1.43K subscribers
+#   https://www.youtube.com/watch?v=zk4bSTD8uWM
+
+on:
+  push:
+    branches:
+      - test
+    paths:
+      - pipelines/**
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Repository.
+        uses: actions/checkout@v3
+
+      - name: Setup Python 3.12.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12' 
+
+      - name: Install Python Dependencies.
+        run: |
+          # python -m pip install --upgrade . botocore boto3 awscli
+          echo "Install Python Dependencies."
+          python -m pip install --upgrade .
+
+      - name: Run python prepare/prepare.py.
+        run: |
+          echo "Run python prepare/prepare.py."
+          python prepare/prepare.py
+
+  train-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Python Dependencies.
+        run: |
+          echo "Install Python Dependencies."
+          python -m pip install --upgrade .
+
+      - name: Train And Build Model.
+        run: |
+          echo "Run python train_build/train_build.py."
+          python train_build/train_build.py
+
+  train-and-build-multiple-version:
+    needs: [train-and-build]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # By default, jobs are run in parallel. max-parallel=1 means the job will be run
+      # sequentially.
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11']
+        # If false, that means we continue to run other versions even if one of the versions
+        # failed to run. If true, stop the job as soon as one of the run failed.
+        fail-fast: [false]
+    steps:
+      - name: Check Out Repository.
+        uses: actions/checkout@v3
+
+      - name: Setup Python Version ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        id: setuppython
+        with:
+          python-version: ${{ matrix.python-version }}
+        
+      - uses: actions/cache@v3
+        id: cache
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}-test1
+
+      - name: Install Python Dependencies.
+        # For the first run, the key is not generated in the cache and the If statement evaluates to != true.
+        # Hence, we will install the dependent packages.
+        # For subsequent runs, the key exists in the cache and so the If statement evaluates to != false.
+        # In other words, the dependent packages will not be installed again.
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: python -m pip install -r requirements.txt
+  
+      - name: Run Python Script.
+        run: |
+          echo "Run Python Script."
+          python prepare/prepare.py
+
+  convert-model-to-docker-image:
+    needs: [train-and-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Convert Model To Docker Image.
+        run: |
+          echo "Convert Model To Docker Image."
+
+  push-image-to-docker-hub:
+    needs: [convert-model-to-docker-image]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login To Docker Hub.
+        run: |
+          echo "Login To Docker Hub."
+
+      - name: Push Model Image To Docker Hub.
+        run: |
+          echo "Push Model Image To Docker Hub."
