@@ -62,10 +62,10 @@ jobs:
       # sequentially.
       max-parallel: 1
       matrix:
-        # os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [ubuntu-latest, windows-latest]
-        # python-version: ['3.9', '3.10', '3.11']
-        python-version: ['3.9', '3.10']
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        # os: [ubuntu-latest, windows-latest]
+        python-version: ['3.9', '3.10', '3.11']
+        # python-version: ['3.9', '3.10']
         # If false, that means we continue to run other versions even if one of the versions
         # failed to run. If true, stop the job as soon as one of the run failed.
         fail-fast: [false]
@@ -92,13 +92,13 @@ jobs:
           key: ${{ runner.os }}-python-${{ hashFiles('requirements.txt') }}-test1
 
       - name: Install Python Dependencies.
+        run: python -m pip install -r requirements.txt
         # For the first run, the key is not generated in the cache and the If statement evaluates to != true.
         # Hence, we will install the dependent packages.
         # For subsequent runs, the key exists in the cache and so the If statement evaluates to != false.
         # In other words, the dependent packages will not be installed again.
-        if: steps.cache.outputs.cache-hit == false
-        run: python -m pip install -r requirements.txt
-  
+        if: steps.cache.outputs.cache-hit != 'true'
+
       - name: Run Python Script.
         run: |
           echo "Run Python Script."
