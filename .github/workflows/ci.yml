@@ -119,9 +119,8 @@ jobs:
 
       - name: Build And Push Image To Docker Hub.
         run: |
-          uses: docker/build-push-action@v5
+          uses: docker/build-push-action@v3
           with:
-            context: .
             push: true
             tags: sunnymoon1314/ml-model:latest, sunnymoon1314/ml-model:${{ github.run_number }}
 
