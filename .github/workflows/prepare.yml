@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Check Out Repository.
         uses: actions/checkout@v4
-  
+ 
       - name: Setup Python 3.12.
         uses: actions/setup-python@v5
         with:
@@ -53,7 +53,7 @@ jobs:
         run: |
           echo "Run python train_build/train_build.py."
           python train_build/train_build.py
-          
+
   train-and-build-multiple-version:
     needs: [train-and-build]
     runs-on: ${{ matrix.os }}
@@ -103,3 +103,40 @@ jobs:
         run: |
           echo "Run Python Script."
           python prepare/prepare.py
+
+  build-and-push-image-to-docker-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Repository.
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub.
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build And Push Image To Docker Hub.
+        run: |
+          uses: docker/build-push-action@v2
+          with:
+            context: .
+            push: true
+            tags: sunnymoon1314/ml-model:latest, sunnymoon1314/ml-model:${{ github.run_number }}
+
+  login-to-ecr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        with:
+          # This statement for public repositories.
+          # registry: public.ecr.aws
+          # This statement for private repositories.
+          registry: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        env:
+          # AWS_ACCOUNT_IDS: 012345678910,023456789012
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
