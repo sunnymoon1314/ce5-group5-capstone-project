@@ -10,7 +10,7 @@ on:
       - pipelines/**
   workflow_dispatch:
 
-env:
+# env:
   # MY_ENVIRONMENT_VARIABLE: ${{ secrets.AWS_ACCESS_KEY}}
 
 jobs:
@@ -61,7 +61,7 @@ jobs:
         python-version: ['3.9', '3.10', '3.11']
         # If false, that means we continue to run other versions even if one of the versions
         # failed to run. If true, stop the job as soon as one of the run failed.
-        fail-fast: false
+        fail-fast: [false]
     steps:
       - name: Check Out Repository.
         uses: actions/checkout@v3
