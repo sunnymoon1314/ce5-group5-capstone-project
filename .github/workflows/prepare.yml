@@ -53,10 +53,6 @@ jobs:
         run: |
           echo "Run python train_build/train_build.py."
           python train_build/train_build.py
-
-          name: Run Python script to prepare the dataset for training
-          # - How to Run Python Scripts in GitHub Action Workflows, Data Engineering With Nick, 1.43K subscribers
-          #   https://www.youtube.com/watch?v=zk4bSTD8uWM
           
   train-and-build-multiple-version:
     needs: [train-and-build]
