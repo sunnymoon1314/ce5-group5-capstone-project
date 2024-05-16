@@ -103,6 +103,7 @@ jobs:
         run: |
           echo "Run Python Script."
           python prepare/prepare.py
+    if: 0 == 1
 
   build-and-push-image-to-docker-hub:
     runs-on: ubuntu-latest
