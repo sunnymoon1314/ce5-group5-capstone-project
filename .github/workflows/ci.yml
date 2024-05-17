@@ -5,13 +5,38 @@ name: Run Python script to prepare the dataset for training
 on:
   push:
     branches:
-      - test
+      - main
     paths:
-      - pipelines/**
+      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
+      # This workflow file will run for push event that includes a file in the src folder or its sub-folders.
+      - src/**
+      # This workflow file will run for push event that includes a file in the data folder or its sub-folders.
+      - data/**
   workflow_dispatch:
+    inputs:
+      target_env:
+          type: environment
+          description: Select the environment
+      action:
+          type: choice
+          options:
+              - prepare
+              - train-build
+          description: Select the action, whether to prepare, train-build or deploy ECS cluster
 
 jobs:
+  pre-action-step:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Repository.
+        uses: actions/checkout@v4
+      - name: print environment and action
+        run: | 
+          echo "env selected is ${{ inputs.target_env }}"
+          echo "action selected is ${{ inputs.action }}"
+  
   prepare:
+    needs: [pre-action-step]
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Repository.
@@ -30,32 +55,18 @@ jobs:
 
       - name: Run python prepare/prepare.py.
         run: |
-          echo "Run python prepare/prepare.py."
-          python prepare/prepare.py
-
-  train-and-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check Out Repository.
-        uses: actions/checkout@v4
- 
-      - name: Setup Python 3.12.
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12' 
-
-      - name: Install Python Dependencies.
-        run: |
-          echo "Install Python Dependencies."
-          python -m pip install -r requirements.txt
-
-      - name: Train And Build Model.
-        run: |
-          echo "Run python train_build/train_build.py."
-          python train_build/train_build.py
-
+          if [ "${{ inputs.action }}" = "prepare" ]; then
+            echo "Run python src/prepare.py."
+            echo "Generated new file for dataset."
+            python src/prepare.py
+          elif [ "${{ inputs.action }}" = "train-build" ]; then
+            echo "Run python src/train_build.py."
+            echo "Generated new model file."
+            python src/train_build.py
+          fi
+  
   train-and-build-multiple-version:
-    needs: [train-and-build]
+    needs: [pre-action-step]
     runs-on: ${{ matrix.os }}
     strategy:
       # By default, jobs are run in parallel. max-parallel=1 means the job will be run
@@ -102,10 +113,11 @@ jobs:
       - name: Run Python Script.
         run: |
           echo "Run Python Script."
-          python prepare/prepare.py
+          python src/prepare.py
     if: 0 == 1
 
   build-and-push-image-to-docker-hub:
+    needs: [pre-action-step]
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Repository.
@@ -127,6 +139,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/ml-model:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/ml-model:${{ github.run_number }}
+    if: ${{ inputs.action }} = 'train-build'
 
   login-to-ecr:
     runs-on: ubuntu-latest
