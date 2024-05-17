@@ -22,7 +22,7 @@ on:
           options:
               - prepare
               - train-build
-          description: Select the action, whether to prepare, train-build or deploy ECS cluster
+          description: Select the action, whether to prepare or train-build the ML model.
 
 jobs:
   pre-action-step:
