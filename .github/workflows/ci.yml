@@ -99,12 +99,16 @@ jobs:
           # - /opt/hostedtoolcache/Python/3.11.9/x64 for Linux.
           # - C:\hostedtoolcache\windows\Python\3.9.13\x64 for Windows.
           # - /Users/runner/hostedtoolcache/Python/3.9.13/arm64 for MacOS.
-          # key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}-test1
-          key: ${{ runner.os }}-python-${{ github.run_id }}-${{ hashFiles('requirements.txt') }}-test1
+          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}-test1
+          # key: ${{ runner.os }}-python-${{ github.run_id }}-${{ hashFiles('requirements.txt') }}-test1
 
       - name: Install Python Dependencies.
         if: steps.cache.outputs.cache-hit != 'true'
-        run: python -m pip install -r requirements.txt
+        run: |
+          echo "runner.os is ${{ runner.os }}"
+          echo "env.pythonLocation is ${{ env.pythonLocation }}"
+          echo "github.run_id is ${{ github.run_id }}"
+          python -m pip install -r requirements.txt
         # For the first run, the key is not generated in the cache and the If statement evaluates to != true.
         # Hence, we will install the dependent packages.
         # For subsequent runs, the key exists in the cache and so the If statement evaluates to != false.
