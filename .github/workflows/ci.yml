@@ -65,7 +65,7 @@ jobs:
             python src/train_build.py
           fi
   
-  train-and-build-multiple-version:
+  train-build-multi:
     needs: [pre-action-step]
     runs-on: ${{ matrix.os }}
     strategy:
