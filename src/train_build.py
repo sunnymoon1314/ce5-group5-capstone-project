@@ -1,3 +1,4 @@
+import pandas as pd
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -6,12 +7,23 @@ import joblib
 
 def train_build():
     # Load dataset
-    iris = datasets.load_iris()
-    X = iris.data
-    y = iris.target
+    # iris = datasets.load_iris()
+    # X = iris.data
+    # y = iris.target
+    
+    data = pd.read_csv('./data/iris.csv')
+    data.head()
+    data.tail()
+
+    X = data.drop(['target', 'target_names'], axis=1)
+    y = data["target"]
+    X.head()
+    X.tail()
+    y.head()
+    y.tail()
 
     # Split dataset into training set and test set
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=123)
 
     # Create a Gaussian Classifier
     clf = RandomForestClassifier()
@@ -26,8 +38,12 @@ def train_build():
     print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
 
     # Save the trained model
-    joblib.dump(clf, 'iris_model.pkl')
-    print("Model saved!")
+    joblib.dump(clf, './model/iris_model.pkl')
+    print("Model dumped!")
+    # Saving the data columns from training
+    model_columns = list(X.columns)
+    joblib.dump(model_columns, './model/iris_model_columns.pkl')
+    print("Models columns dumped!")
 
 if __name__ == "__main__":
     train_build()

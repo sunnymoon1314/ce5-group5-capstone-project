@@ -108,6 +108,7 @@ jobs:
           echo "runner.os is ${{ runner.os }}"
           echo "env.pythonLocation is ${{ env.pythonLocation }}"
           echo "github.run_id is ${{ github.run_id }}"
+          echo "hashFiles('requirements.txt') is ${{ hashFiles('requirements.txt') }}"
           python -m pip install -r requirements.txt
         # For the first run, the key is not generated in the cache and the If statement evaluates to != true.
         # Hence, we will install the dependent packages.
@@ -118,7 +119,7 @@ jobs:
         run: |
           echo "Run Python Script."
           python src/prepare.py
-    if: 1 == 1
+    if: 0 == 1
 
   build-and-push-image-to-docker-hub:
     needs: [pre-action-step]
