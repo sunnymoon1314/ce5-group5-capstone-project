@@ -26,7 +26,7 @@ def train_build():
     print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
 
     # Save the trained model
-    joblib.dump(clf, '..\data\iris_model.pkl')
+    joblib.dump(clf, 'iris_model.pkl')
     print("Model saved!")
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ def prepare():
     df = pd.DataFrame(data=data['data'], columns = data['feature_names'])
     df.head(10)
     df.tail(10)
-    df.to_csv('..\data\iris.txt', sep = ',', index = False)
+    df.to_csv('iris.txt', sep = ',', index = False)
 
 if __name__ == "__main__":
     prepare()
