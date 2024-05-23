@@ -6,6 +6,12 @@ on:
   push:
     branches:
       - dev
+    paths:
+      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
+      # This workflow file will run for push event that includes a file in the src folder or its sub-folders.
+      - src/**
+      # This workflow file will run for push event that includes a file in the data folder or its sub-folders.
+      - data/**
   workflow_dispatch:
     inputs:
       selected-environment:

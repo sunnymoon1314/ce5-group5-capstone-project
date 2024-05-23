@@ -5,5 +5,5 @@
 ## - Will trigger the prepare-train-build.yml workflow.
 ## - Upon completion of the workflow, approval is required to push to DockerHub.
 ## (2) Git push to main branch:
-## - Will trigger the deploy.yml workflow.
+## - Will trigger the build-push.yml workflow.
 ## - Upon completion of the workflow, approval is required to deploy to ECR.
