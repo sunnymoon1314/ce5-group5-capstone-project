@@ -40,6 +40,7 @@ def train_build():
         f.write(f"Accuracy: {accuracy_score(y_test, y_pred)}")
         f.write('\n')
 
+    # https://stackoverflow.com/questions/47059781/how-to-append-new-dataframe-rows-to-a-csv-using-pandas
     # data.head().to_csv('./model/accuracy.txt', sep='\t', header=None, mode='a')
     data.head().to_csv('./model/accuracy.txt', sep='\t', mode='a')
     data.tail().to_csv('./model/accuracy.txt', sep='\t', header=None, mode='a')
