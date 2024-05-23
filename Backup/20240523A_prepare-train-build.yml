@@ -6,11 +6,17 @@ on:
   push:
     branches:
       - dev
+    paths:
+      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
+      # This workflow file will run for push event that includes a file in the src folder or its sub-folders.
+      - src/**
+      # This workflow file will run for push event that includes a file in the data folder or its sub-folders.
+      - data/**
   workflow_dispatch:
-    # inputs:
-      # selected-environment:
-      #    type: environment
-      #    description: Select the environment.
+    inputs:
+      selected-environment:
+          type: environment
+          description: Select the environment.
       # action:
       #    type: choice
       #    options:
@@ -25,13 +31,12 @@ jobs:
       - name: Check out repository.
         uses: actions/checkout@v4
       - name: Print selected-environment.
-        run: |
-          # echo "Environment selected is ${{ inputs.selected-environment }}."
-          echo ""
+        run: | 
+          echo "Environment selected is ${{ inputs.selected-environment }}."
   
   prepare-train-build:
     needs: [pre-action-step]
-    environment: "dev"
+    environment: ${{ inputs.selected-environment }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository.
@@ -58,17 +63,9 @@ jobs:
           # This will create a *_model.pkl file in the model folder.
           python src/train_build.py
 
-      # https://github.com/actions/upload-artifact/tree/v4
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Trained model artifact.
-          # You can use wildcard pattern to specify what files/folders to upload.
-          # path: ./model/*.pkl
-          path: ./model/*
-
   train-build-multi:
     needs: [pre-action-step]
-    environment: "dev"
+    environment: ${{ inputs.selected-environment }}
     runs-on: ${{ matrix.os }}
     strategy:
       # By default, jobs are run in parallel. max-parallel=1 means the job will be run
@@ -125,7 +122,7 @@ jobs:
 
   login-to-ecr:
     needs: [pre-action-step]
-    environment: "dev"
+    environment: ${{ inputs.selected-environment }}
     runs-on: ubuntu-latest
     steps:
       - name: Login to ECR.
