@@ -7,10 +7,10 @@ on:
     branches:
       - dev
   workflow_dispatch:
-    inputs:
-      selected-environment:
-          type: environment
-          description: Select the environment.
+    # inputs:
+      # selected-environment:
+      #    type: environment
+      #    description: Select the environment.
       # action:
       #    type: choice
       #    options:
@@ -25,12 +25,13 @@ jobs:
       - name: Check out repository.
         uses: actions/checkout@v4
       - name: Print selected-environment.
-        run: | 
-          echo "Environment selected is ${{ inputs.selected-environment }}."
+        run: |
+          # echo "Environment selected is ${{ inputs.selected-environment }}."
+          echo ""
   
   prepare-train-build:
     needs: [pre-action-step]
-    environment: ${{ inputs.selected-environment }}
+    environment: "dev"
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository.
@@ -59,7 +60,7 @@ jobs:
 
   train-build-multi:
     needs: [pre-action-step]
-    environment: ${{ inputs.selected-environment }}
+    environment: "dev"
     runs-on: ${{ matrix.os }}
     strategy:
       # By default, jobs are run in parallel. max-parallel=1 means the job will be run
@@ -116,7 +117,7 @@ jobs:
 
   login-to-ecr:
     needs: [pre-action-step]
-    environment: ${{ inputs.selected-environment }}
+    environment: "dev"
     runs-on: ubuntu-latest
     steps:
       - name: Login to ECR.
