@@ -9,14 +9,14 @@ on:
   workflow_dispatch:
     # inputs:
       # selected-environment:
-      #    type: environment
-      #    description: Select the environment.
+          # type: environment
+          # description: Select the environment.
       # action:
-      #    type: choice
-      #    options:
-      #        - prepare
-      #        - train-build
-      #    description: Select the action, whether to prepare or train-build the ML model.
+          # type: choice
+          # options:
+              # - prepare
+              # - train-build
+          # description: Select the action, whether to prepare or train-build the ML model.
 
 jobs:
   pre-action-step:
