@@ -36,6 +36,7 @@ jobs:
           echo "action selected is ${{ inputs.action }}"
   
   prepare-train-build:
+    environment: ${{ inputs.target_env }}
     needs: [pre-action-step]
     runs-on: ubuntu-latest
     steps:
@@ -66,6 +67,7 @@ jobs:
           fi
   
   train-build-multi:
+    environment: ${{ inputs.target_env }}
     needs: [pre-action-step]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -122,6 +124,7 @@ jobs:
     if: 0 == 1
 
   build-and-push-image-to-docker-hub:
+    environment: ${{ inputs.target_env }}
     needs: [pre-action-step]
     runs-on: ubuntu-latest
     steps:
@@ -147,6 +150,7 @@ jobs:
     if: ${{ inputs.action }} = 'train-build'
 
   login-to-ecr:
+    environment: ${{ inputs.target_env }}
     runs-on: ubuntu-latest
     steps:
       - name: Login to ECR
