@@ -58,6 +58,14 @@ jobs:
           # This will create a *_model.pkl file in the model folder.
           python src/train_build.py
 
+      # https://github.com/actions/upload-artifact/tree/v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Trained model artifact.
+          # You can use wildcard pattern to specify what files/folders to upload.
+          # path: ./model/*.pkl
+          path: ./model/*
+
   train-build-multi:
     needs: [pre-action-step]
     environment: "dev"
