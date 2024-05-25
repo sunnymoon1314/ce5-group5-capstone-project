@@ -124,7 +124,7 @@ jobs:
         run: |
           echo "Run python src/prepare.py."
           python src/prepare.py
-    if: 0 == 1
+    if: 1 == 1
 
   login-to-ecr:
     needs: [pre-action-step]
