@@ -17,7 +17,9 @@ on:
               # - prepare
               # - train-build
           # description: Select the action, whether to prepare or train-build the ML model.
-
+permissions:
+  security-events: write
+  
 jobs:
   pre-action-step:
     runs-on: ubuntu-latest
