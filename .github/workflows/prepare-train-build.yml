@@ -1,4 +1,4 @@
-name: Run Python script to prepare the dataset for training
+name: Run Python scripts to prepare the dataset, train, test, build the model (pkl format).
 # - How to Run Python Scripts in GitHub Action Workflows, Data Engineering With Nick, 1.43K subscribers
 #   https://www.youtube.com/watch?v=zk4bSTD8uWM
 
@@ -17,6 +17,7 @@ on:
               # - prepare
               # - train-build
           # description: Select the action, whether to prepare or train-build the ML model.
+
 permissions:
   security-events: write
   
