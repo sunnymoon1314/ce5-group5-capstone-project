@@ -1,4 +1,4 @@
-name: Run Python script to prepare the dataset for training
+name: Run Python scripts to prepare the dataset, train, test, build the model (pkl format).
 # - How to Run Python Scripts in GitHub Action Workflows, Data Engineering With Nick, 1.43K subscribers
 #   https://www.youtube.com/watch?v=zk4bSTD8uWM
 
@@ -18,6 +18,9 @@ on:
               # - train-build
           # description: Select the action, whether to prepare or train-build the ML model.
 
+permissions:
+  security-events: write
+  
 jobs:
   pre-action-step:
     runs-on: ubuntu-latest
@@ -36,6 +39,23 @@ jobs:
     steps:
       - name: Check out repository.
         uses: actions/checkout@v4
+
+  # 25.05.2024 Soon: Added snyk-scan job.
+  snyk-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk.sarif
 
       - name: Setup Python 3.12.
         uses: actions/setup-python@v5
@@ -78,6 +98,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         # os: [ubuntu-latest]
         python-version: ['3.9', '3.10', '3.11']
+        # python-version: ['3.10', '3.11']
         # python-version: ['3.11']
         # If false, that means we continue to run other versions even if one of the versions
         # failed to run. If true, stop the job as soon as one of the run failed.
@@ -101,9 +122,11 @@ jobs:
           # - /opt/hostedtoolcache/Python/3.11.9/x64 for Linux.
           # - C:\hostedtoolcache\windows\Python\3.9.13\x64 for Windows.
           # - /Users/runner/hostedtoolcache/Python/3.9.13/arm64 for MacOS.
-          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}-test1
-          # key: ${{ runner.os }}-python-${{ github.run_id }}-${{ hashFiles('requirements.txt') }}-test1
-
+          # key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}-test1
+          key: ${{ runner.os }}-python-${{ github.run_id }}-${{ hashFiles('requirements.txt') }}-test1
+          restore-keys: |
+            ${{ runner.os }}-python-${{ github.run_id }}-${{ hashFiles('requirements.txt') }}-test1
+    
       - name: Install Python dependencies.
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
