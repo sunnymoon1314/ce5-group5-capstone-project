@@ -32,15 +32,7 @@ jobs:
           # echo "Environment selected is ${{ inputs.selected-environment }}."
           echo ""
   
-  prepare-train-build:
-    needs: [pre-action-step]
-    environment: "dev"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository.
-        uses: actions/checkout@v4
-
-  # 25.05.2024 Soon: Added snyk-scan job.
+    # 25.05.2024 Soon: Added snyk-scan job.
   snyk-scan:
     runs-on: ubuntu-latest
     steps:
@@ -56,6 +48,14 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
+
+  prepare-train-build:
+    needs: [pre-action-step, snyk-scan]
+    environment: "dev"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository.
+        uses: actions/checkout@v4
 
       - name: Setup Python 3.12.
         uses: actions/setup-python@v5
@@ -87,7 +87,7 @@ jobs:
           path: ./model/*
 
   train-build-multi:
-    needs: [pre-action-step]
+    needs: [pre-action-step, snyk-scan]
     environment: "dev"
     runs-on: ${{ matrix.os }}
     strategy:
@@ -147,7 +147,7 @@ jobs:
     if: 0 == 1
 
   login-to-ecr:
-    needs: [pre-action-step]
+    needs: [pre-action-step, snyk-scan]
     environment: "dev"
     runs-on: ubuntu-latest
     steps:
