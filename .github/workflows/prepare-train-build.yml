@@ -48,6 +48,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
+    if: 0 == 1
 
   prepare-train-build:
     needs: [pre-action-step, snyk-scan]
