@@ -12,7 +12,7 @@ name: Deploy the release version of the model(s) to staging and production.
 on:
   push:
     branches:
-      - xxx_main
+      - xxx_main_xxx
     tags:
       # - 'v*.*.*'
       # Push events to match v*, i.e. v1.0, v20.15.10.
