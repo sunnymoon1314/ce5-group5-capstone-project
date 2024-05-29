@@ -46,4 +46,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:latest, ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:${{ github.run_number }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ml-model:latest
